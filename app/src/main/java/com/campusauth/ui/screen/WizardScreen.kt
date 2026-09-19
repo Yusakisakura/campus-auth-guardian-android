@@ -317,12 +317,19 @@ fun WizardScreen(onComplete: () -> Unit) {
 
                         Spacer(Modifier.weight(1f))
 
+                        val verified = verifyResult?.startsWith("认证成功") == true
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             OutlinedButton(onClick = { step = 1 }, modifier = Modifier.weight(1f)) {
                                 Text("上一步")
                             }
-                            Button(onClick = { step = 3 }, modifier = Modifier.weight(1f)) {
-                                Text("跳过验证")
+                            if (verified) {
+                                Button(onClick = { step = 3 }, modifier = Modifier.weight(1f)) {
+                                    Text("下一步")
+                                }
+                            } else {
+                                OutlinedButton(onClick = { step = 3 }, modifier = Modifier.weight(1f)) {
+                                    Text("跳过验证")
+                                }
                             }
                         }
                     }
