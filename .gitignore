@@ -13,3 +13,5 @@ local.properties
 /app/src/main/jniLibs/
 /app/release/
 *.so
+*.jks
+*.keystore
