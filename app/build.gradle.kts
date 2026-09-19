@@ -221,9 +221,10 @@ android {
     }
 }
 
-// Wire writeVersionProperties before mergeAssets tasks
+// Wire writeVersionProperties before any task that reads assets
 tasks.whenTaskAdded {
-    if (name.startsWith("merge") && name.endsWith("Assets")) {
+    if (name.startsWith("merge") && name.endsWith("Assets")
+        || name.startsWith("lint") || name.startsWith("generate") && name.contains("Lint")) {
         dependsOn("writeVersionProperties")
     }
 }
