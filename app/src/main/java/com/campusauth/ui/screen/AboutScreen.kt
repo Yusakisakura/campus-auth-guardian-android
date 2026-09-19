@@ -1,6 +1,7 @@
 package com.campusauth.ui.screen
 
 import android.os.Build
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -15,12 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.campusauth.BuildConfig
+import com.campusauth.R
 
 @Composable
 fun AboutScreen() {
@@ -61,19 +63,19 @@ fun AboutScreen() {
             RepoRow(
                 name = "campus-auth-guardian-android",
                 author = "Yusakisakura",
-                avatarUrl = "https://github.com/Yusakisakura.png",
+                avatarRes = R.drawable.avatar_yusakisakura,
                 onClick = { uriHandler.openUri("https://github.com/Yusakisakura/campus-auth-guardian-android") },
             )
             RepoRow(
                 name = "campus-auth-guardian-openwrt",
                 author = "Yusakisakura",
-                avatarUrl = "https://github.com/Yusakisakura.png",
+                avatarRes = R.drawable.avatar_yusakisakura,
                 onClick = { uriHandler.openUri("https://github.com/Yusakisakura/campus-auth-guardian-openwrt") },
             )
             RepoRow(
                 name = "campus-auth-guardian",
                 author = "NekoMirra",
-                avatarUrl = "https://github.com/NekoMirra.png",
+                avatarRes = R.drawable.avatar_nekomirra,
                 onClick = { uriHandler.openUri("https://github.com/NekoMirra/campus-auth-guardian") },
             )
         }
@@ -167,7 +169,7 @@ private fun InfoRow(label: String, value: String) {
 }
 
 @Composable
-private fun RepoRow(name: String, author: String, avatarUrl: String, onClick: () -> Unit) {
+private fun RepoRow(name: String, author: String, avatarRes: Int, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -175,8 +177,8 @@ private fun RepoRow(name: String, author: String, avatarUrl: String, onClick: ()
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AsyncImage(
-            model = avatarUrl,
+        Image(
+            painter = painterResource(avatarRes),
             contentDescription = author,
             modifier = Modifier
                 .size(32.dp)
