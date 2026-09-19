@@ -132,33 +132,6 @@ VERSION_NAME=0.1.0    # 语义化版本
 
 ---
 
-## 核心 Rust 模块与 Windows 版复用情况
-
-| 模块 | 复用 | 说明 |
-|------|------|------|
-| `auth.rs` | ✅ 100% | ePortal JSONP 认证协议完全复用 |
-| `config.rs` | ✅ 100% | INI 配置解析完全复用 |
-| `guardian.rs` | ✅ ~90% | 守护循环复用，新增自适应轮询 + 非校园网判断 |
-| `netcheck.rs` | ✅ ~90% | 连通性检测复用，新增 Portal 可达性探测 |
-| `logger.rs` | ✅ 95% | 去除文件轮转（Android 用 logcat） |
-| `ipdetect.rs` | 🔄 重写 | `GetAdaptersAddresses` → UDP 探测 + ConnectivityManager |
-| `uniffi_api.rs` | 🔄 重写 | C FFI → UniFFI（功能等价） |
-| WinUI 3 壳 | ❌ 重写 | Compose + Material 3 全新 UI |
-
----
-
-## 权限
-
-| 权限 | 用途 |
-|------|------|
-| `INTERNET` | 网络认证请求 |
-| `ACCESS_NETWORK_STATE` / `ACCESS_WIFI_STATE` | 网络状态监听 |
-| `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_SPECIAL_USE` | 前台 Service 常驻 |
-| `RECEIVE_BOOT_COMPLETED` | 开机自启 |
-| `WAKE_LOCK` | CPU 唤醒锁（后台保活） |
-| `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` | 请求电池优化白名单 |
-
----
 
 ## License
 
