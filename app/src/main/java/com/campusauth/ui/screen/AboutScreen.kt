@@ -4,19 +4,22 @@ import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.OpenInNew
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.campusauth.BuildConfig
 
 @Composable
@@ -58,16 +61,19 @@ fun AboutScreen() {
             RepoRow(
                 name = "campus-auth-guardian-android",
                 author = "Yusakisakura",
+                avatarUrl = "https://github.com/Yusakisakura.png",
                 onClick = { uriHandler.openUri("https://github.com/Yusakisakura/campus-auth-guardian-android") },
             )
             RepoRow(
                 name = "campus-auth-guardian-openwrt",
                 author = "Yusakisakura",
+                avatarUrl = "https://github.com/Yusakisakura.png",
                 onClick = { uriHandler.openUri("https://github.com/Yusakisakura/campus-auth-guardian-openwrt") },
             )
             RepoRow(
                 name = "campus-auth-guardian",
                 author = "NekoMirra",
+                avatarUrl = "https://github.com/NekoMirra.png",
                 onClick = { uriHandler.openUri("https://github.com/NekoMirra/campus-auth-guardian") },
             )
         }
@@ -161,7 +167,7 @@ private fun InfoRow(label: String, value: String) {
 }
 
 @Composable
-private fun RepoRow(name: String, author: String, onClick: () -> Unit) {
+private fun RepoRow(name: String, author: String, avatarUrl: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -169,6 +175,15 @@ private fun RepoRow(name: String, author: String, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        AsyncImage(
+            model = avatarUrl,
+            contentDescription = author,
+            modifier = Modifier
+                .size(32.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop,
+        )
+        Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = name,
@@ -184,7 +199,7 @@ private fun RepoRow(name: String, author: String, onClick: () -> Unit) {
             )
         }
         Icon(
-            imageVector = Icons.Default.OpenInNew,
+            imageVector = Icons.AutoMirrored.Filled.OpenInNew,
             contentDescription = null,
             modifier = Modifier.size(16.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
