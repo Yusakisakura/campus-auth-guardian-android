@@ -148,24 +148,20 @@ val gitDate   by lazy { gitCmd("log", "-1", "--format=%ci") }
 val gitBranch by lazy { gitCmd("rev-parse", "--abbrev-ref", "HEAD") }
 val buildTime = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
 
-// Write version.properties into assets for AboutScreen to read at runtime
+// Write version.properties into generated assets for AboutScreen to read at runtime
+val versionAssetsDir = layout.buildDirectory.dir("generated/version-assets").get().asFile
+
 tasks.register("writeVersionProperties") {
-    val outDir = file("${projectDir}/src/main/assets")
-    val outFile = outDir.resolve("version.properties")
+    val outFile = versionAssetsDir.resolve("version.properties")
     outputs.file(outFile)
     doLast {
-        outDir.mkdirs()
+        versionAssetsDir.mkdirs()
         outFile.writeText(buildString {
             appendLine("git_hash=$gitHash")
             appendLine("git_date=$gitDate")
             appendLine("git_branch=$gitBranch")
             appendLine("build_time=$buildTime")
         })
-    }
-}
-tasks.whenTaskAdded {
-    if (name.startsWith("merge") && name.endsWith("Assets")) {
-        dependsOn("writeVersionProperties")
     }
 }
 
@@ -216,6 +212,21 @@ android {
         compose = true
         buildConfig = true
     }
+
+    // Register generated version.properties as an additional assets source
+    sourceSets {
+        getByName("main") {
+            assets.srcDir(versionAssetsDir)
+        }
+    }
+}
+
+// Wire writeVersionProperties before mergeAssets tasks
+tasks.whenTaskAdded {
+    if (name.startsWith("merge") && name.endsWith("Assets")) {
+        dependsOn("writeVersionProperties")
+    }
+}
 }
 
 dependencies {
