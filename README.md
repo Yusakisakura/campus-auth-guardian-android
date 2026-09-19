@@ -5,6 +5,8 @@
 **Rust 内核 + Jetpack Compose + Material 3**
 
 > 从 [campus-auth-guardian](https://github.com/nicbn/campus-auth-guardian) Windows 版移植而来，核心 Rust 业务逻辑复用率 ~85%，Android 壳全新编写。
+>
+> 仓库地址：[github.com/Yusakisakura/campus-auth-guardian-android](https://github.com/Yusakisakura/campus-auth-guardian-android)
 
 ---
 
