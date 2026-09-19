@@ -26,7 +26,7 @@ jobs:
         targets: aarch64-linux-android,x86_64-linux-android
 
     - name: Install UniFFI
-      run: cargo install uniffi-bindgen
+      run: cargo install uniffi --features cli
 
     - name: Install Android NDK
       run: echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "ndk;30.0.16248370"
