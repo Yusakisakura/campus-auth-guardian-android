@@ -227,7 +227,6 @@ tasks.whenTaskAdded {
         dependsOn("writeVersionProperties")
     }
 }
-}
 
 dependencies {
     implementation(libs.androidx.core.ktx)

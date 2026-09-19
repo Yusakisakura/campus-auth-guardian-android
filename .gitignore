@@ -10,4 +10,5 @@ build/
 local.properties
 /rust/target/
 /app/src/main/jniLibs/
+/app/release/
 *.so
