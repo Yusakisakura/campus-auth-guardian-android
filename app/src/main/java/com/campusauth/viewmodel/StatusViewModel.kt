@@ -126,7 +126,7 @@ class StatusViewModel(app: Application) : AndroidViewModel(app) {
             }
             "state" -> {
                 // "state" event is the single source of truth for guardian running state
-                _state.update { it.copy(guardianState = event.state) }
+                _state.update { it.copy(guardianState = event.state, guardianEnabled = event.state > 0) }
             }
         }
     }
@@ -147,10 +147,24 @@ class StatusViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun setGuardianEnabled(on: Boolean) {
-        // Save user intent; "state" event from Rust will confirm the actual running state
-        _state.update { it.copy(guardianEnabled = on) }
+        if (on && _state.value.operator.isBlank()) {
+            _state.update { it.copy(snackbarMessage = "请先设置运营商") }
+            return
+        }
+        // Immediately update UI so the switch responds
+        _state.update { it.copy(guardianEnabled = on, guardianState = if (on) 1 else 0) }
         viewModelScope.launch(Dispatchers.IO) {
-            GuardianBridge.setGuardianEnabled(on)
+            try {
+                GuardianBridge.setGuardianEnabled(on)
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        guardianEnabled = !on,
+                        guardianState = if (on) 0 else 1,
+                        snackbarMessage = "操作失败: ${e.message}",
+                    )
+                }
+            }
         }
     }
 
