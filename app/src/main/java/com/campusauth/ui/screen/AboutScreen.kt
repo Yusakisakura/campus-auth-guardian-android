@@ -1,25 +1,28 @@
 package com.campusauth.ui.screen
 
 import android.os.Build
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.campusauth.BuildConfig
-import com.campusauth.R
 
 @Composable
 fun AboutScreen() {
+    val uriHandler = LocalUriHandler.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -27,18 +30,8 @@ fun AboutScreen() {
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // ── Logo ────────────────────────────────────────────────────────
-        Spacer(modifier = Modifier.height(32.dp))
-        Image(
-            painter = painterResource(R.mipmap.ic_launcher),
-            contentDescription = "App Icon",
-            modifier = Modifier
-                .size(96.dp)
-                .clip(RoundedCornerShape(20.dp)),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
         // ── App name ────────────────────────────────────────────────────
+        Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = "校园网认证守护",
             style = MaterialTheme.typography.headlineSmall,
@@ -59,11 +52,28 @@ fun AboutScreen() {
             fontWeight = FontWeight.Medium,
         )
 
+        // ── Related repos ───────────────────────────────────────────────
         Spacer(modifier = Modifier.height(24.dp))
-        HorizontalDivider()
+        InfoSection("相关仓库") {
+            RepoRow(
+                name = "campus-auth-guardian-android",
+                author = "Yusakisakura",
+                onClick = { uriHandler.openUri("https://github.com/Yusakisakura/campus-auth-guardian-android") },
+            )
+            RepoRow(
+                name = "campus-auth-guardian-openwrt",
+                author = "Yusakisakura",
+                onClick = { uriHandler.openUri("https://github.com/Yusakisakura/campus-auth-guardian-openwrt") },
+            )
+            RepoRow(
+                name = "campus-auth-guardian",
+                author = "NekoMirra",
+                onClick = { uriHandler.openUri("https://github.com/NekoMirra/campus-auth-guardian") },
+            )
+        }
 
         // ── Build info ──────────────────────────────────────────────────
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         InfoSection("构建信息") {
             InfoRow("提交记录", BuildConfig.GIT_HASH)
             if (BuildConfig.GIT_DATE.isNotEmpty()) InfoRow("提交时间", BuildConfig.GIT_DATE)
@@ -146,6 +156,38 @@ private fun InfoRow(label: String, value: String) {
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.End,
             modifier = Modifier.padding(start = 16.dp),
+        )
+    }
+}
+
+@Composable
+private fun RepoRow(name: String, author: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = name,
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = author,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(
+            imageVector = Icons.Default.OpenInNew,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
