@@ -1,0 +1,4 @@
+namespace t {
+  void f(string x);
+  void g();
+};

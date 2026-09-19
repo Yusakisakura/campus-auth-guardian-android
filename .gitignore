@@ -1,0 +1,14 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+build/
+/captures
+.externalNativeBuild
+.cxx/
+local.properties
+/rust/target/
+/app/src/main/jniLibs/
+/app/src/main/assets/version.properties
+*.so

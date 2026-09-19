@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Simple shield/Wi-Fi icon placeholder -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,30 L54,30 C72.2,30 87,44.8 87,63 L87,78 L21,78 L21,63 C21,44.8 35.8,30 54,30Z" />
+    <path
+        android:fillColor="#0061A4"
+        android:pathData="M54,45 L54,45 C63.9,45 72,53.1 72,63 L72,72 L36,72 L36,63 C36,53.1 44.1,45 54,45Z" />
+</vector>

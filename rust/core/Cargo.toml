@@ -1,0 +1,18 @@
+[package]
+name = "guardian-core-android"
+version.workspace = true
+edition.workspace = true
+description = "Campus network ePortal authentication core — Android build"
+
+[lib]
+name = "guardian_core_android"
+crate-type = ["cdylib"]
+
+[build-dependencies]
+uniffi = { version = "0.32", features = ["build"] }
+
+[dependencies]
+uniffi = { version = "0.32", features = ["cli"] }
+ureq = { version = "2.10", default-features = false, features = ["gzip"] }
+crossbeam-channel = "0.5"
+serde_json = "1"

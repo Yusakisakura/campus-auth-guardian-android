@@ -1,0 +1,28 @@
+[Error]
+enum GuardianError {
+  "NotInitialized",
+  "ConfigError",
+  "IoError"
+};
+
+namespace guardian_core_android {
+  [Throws=GuardianError]
+  void guardian_init(string config_ini);
+  [Throws=GuardianError]
+  string guardian_config_ini();
+  [Throws=GuardianError]
+  void guardian_config_apply(string config_ini);
+  [Throws=GuardianError]
+  string guardian_auth_now();
+  [Throws=GuardianError]
+  void guardian_set_enabled(boolean on);
+  i32 guardian_state();
+  string? guardian_poll_event();
+  [Throws=GuardianError]
+  void guardian_set_operator(string op);
+  string guardian_recent_logs();
+  string guardian_probe_server(string auth_url);
+  string guardian_operators();
+  void guardian_set_local_ip(string ip);
+  void guardian_probe_network();
+};

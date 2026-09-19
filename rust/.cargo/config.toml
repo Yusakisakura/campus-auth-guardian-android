@@ -1,0 +1,6 @@
+[target.x86_64-linux-android]
+linker = "C:\\Users\\FTB00\\AppData\\Local\\Android\\Sdk\\ndk\\30.0.16248370/toolchains/llvm/prebuilt/windows-x86_64/bin/x86_64-linux-android26-clang.cmd"
+ar = "C:\\Users\\FTB00\\AppData\\Local\\Android\\Sdk\\ndk\\30.0.16248370/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-ar"
+
+[build]
+target-dir = "E:\\xyw\\campus-auth-guardian-android/rust/target"

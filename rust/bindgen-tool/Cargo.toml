@@ -1,0 +1,10 @@
+[workspace]
+
+[package]
+name = "bindgen-tool"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+uniffi = { version = "0.28.3", features = ["cli"] }
+camino = "1"

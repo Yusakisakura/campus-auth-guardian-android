@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material 3 dynamic color theme — Android 12+ auto-extracts from wallpaper -->
+    <style name="Theme.CampusAuthGuardian" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
