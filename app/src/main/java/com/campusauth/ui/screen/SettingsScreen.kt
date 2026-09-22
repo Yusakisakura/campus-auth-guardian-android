@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.campusauth.ffi.GuardianBridge
+import com.campusauth.update.UpdateChecker
 import com.campusauth.util.detectOem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,6 +43,8 @@ fun SettingsScreen() {
     var maxRetries by remember { mutableStateOf("3") }
     var passwordVisible by remember { mutableStateOf(false) }
     var autoStart by remember { mutableStateOf(false) }
+    var updateCheckEnabled by remember { mutableStateOf(true) }
+    var updateIntervalMs by remember { mutableStateOf(UpdateChecker.INTERVAL_6H) }
     var loaded by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -57,6 +60,15 @@ fun SettingsScreen() {
         autoStart = withContext(Dispatchers.IO) {
             context.getSharedPreferences("guardian_prefs", 0).getBoolean("auto_start", false)
         }
+        val updatePrefs = withContext(Dispatchers.IO) {
+            val prefs = context.getSharedPreferences("guardian_prefs", 0)
+            Pair(
+                prefs.getBoolean(UpdateChecker.PREF_ENABLED, true),
+                prefs.getLong(UpdateChecker.PREF_INTERVAL_MS, UpdateChecker.INTERVAL_6H),
+            )
+        }
+        updateCheckEnabled = updatePrefs.first
+        updateIntervalMs = updatePrefs.second
         loaded = true
     }
 
@@ -118,6 +130,23 @@ fun SettingsScreen() {
                 context.getSharedPreferences("guardian_prefs", 0)
                     .edit().putBoolean("auto_start", on).apply()
             }
+
+            HorizontalDivider()
+
+            UpdateCheckSection(
+                enabled = updateCheckEnabled,
+                onEnabledChange = { on ->
+                    updateCheckEnabled = on
+                    context.getSharedPreferences("guardian_prefs", 0)
+                        .edit().putBoolean(UpdateChecker.PREF_ENABLED, on).apply()
+                },
+                intervalMs = updateIntervalMs,
+                onIntervalChange = { ms ->
+                    updateIntervalMs = ms
+                    context.getSharedPreferences("guardian_prefs", 0)
+                        .edit().putLong(UpdateChecker.PREF_INTERVAL_MS, ms).apply()
+                },
+            )
 
             // MIUI auto-start guidance
             val isMiui = remember { try {
@@ -312,6 +341,55 @@ private fun AutoStartSection(autoStart: Boolean, onToggle: (Boolean) -> Unit) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun UpdateCheckSection(
+    enabled: Boolean, onEnabledChange: (Boolean) -> Unit,
+    intervalMs: Long, onIntervalChange: (Long) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column {
+                Text("更新检查", style = MaterialTheme.typography.titleSmall)
+                Text(
+                    "启动时自动检查 GitHub Releases 新版本",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Switch(checked = enabled, onCheckedChange = onEnabledChange)
+        }
+
+        if (enabled) {
+            Text(
+                "检查频率", style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(
+                    selected = intervalMs == UpdateChecker.INTERVAL_EVERY_LAUNCH,
+                    onClick = { onIntervalChange(UpdateChecker.INTERVAL_EVERY_LAUNCH) },
+                    label = { Text("每次启动") },
+                )
+                FilterChip(
+                    selected = intervalMs == UpdateChecker.INTERVAL_6H,
+                    onClick = { onIntervalChange(UpdateChecker.INTERVAL_6H) },
+                    label = { Text("每 6 小时") },
+                )
+                FilterChip(
+                    selected = intervalMs == UpdateChecker.INTERVAL_24H,
+                    onClick = { onIntervalChange(UpdateChecker.INTERVAL_24H) },
+                    label = { Text("每 24 小时") },
+                )
             }
         }
     }

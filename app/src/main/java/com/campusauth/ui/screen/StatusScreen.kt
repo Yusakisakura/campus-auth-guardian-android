@@ -3,6 +3,8 @@ package com.campusauth.ui.screen
 import androidx.compose.animation.*
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.WifiOff
@@ -12,20 +14,25 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.campusauth.service.GuardianService
 import com.campusauth.ui.component.StatusCard
+import com.campusauth.ui.component.UpdateBanner
 import com.campusauth.ui.component.StatusInfo
 import com.campusauth.ui.component.StatusLevel
+import com.campusauth.update.UpdateChecker
 import com.campusauth.viewmodel.StatusViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatusScreen(vm: StatusViewModel = viewModel()) {
     val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
     val state by vm.state.collectAsState()
+    val updateState by UpdateChecker.state.collectAsState()
 
     // Initialize once
     LaunchedEffect(Unit) { vm.initialize(context) }
@@ -49,10 +56,21 @@ fun StatusScreen(vm: StatusViewModel = viewModel()) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Spacer(modifier = Modifier.height(8.dp))
+
+            // ── Update available banner ──────────────────────────────────
+            val updateInfo = updateState.updateInfo
+            if (updateInfo != null && updateState.showIndicator) {
+                UpdateBanner(
+                    info = updateInfo,
+                    onOpen = { uriHandler.openUri(updateInfo.releaseUrl) },
+                    onDismiss = { UpdateChecker.dismissBanner() },
+                )
+            }
 
             // ── Summary banner ─────────────────────────────────────────
             ElevatedCard(
@@ -143,7 +161,7 @@ fun StatusScreen(vm: StatusViewModel = viewModel()) {
                 },
             )
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // ── Guardian toggle ────────────────────────────────────────
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {

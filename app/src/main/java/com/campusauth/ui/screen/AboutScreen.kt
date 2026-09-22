@@ -9,12 +9,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,10 +28,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.campusauth.BuildConfig
 import com.campusauth.R
+import com.campusauth.update.UpdateChecker
 
 @Composable
 fun AboutScreen() {
     val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
+    val updateState by UpdateChecker.state.collectAsState()
 
     Column(
         modifier = Modifier
@@ -56,6 +64,25 @@ fun AboutScreen() {
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Medium,
         )
+
+        // ── Update check ────────────────────────────────────────────────
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            OutlinedButton(onClick = { UpdateChecker.manualCheck(context) }) {
+                Icon(
+                    imageVector = Icons.Default.SystemUpdate,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(if (updateState.checking) "检查中…" else "检查更新")
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        UpdateCheckResult(updateState, onOpenDownload = { url -> uriHandler.openUri(url) })
 
         // ── Related repos ───────────────────────────────────────────────
         Spacer(modifier = Modifier.height(24.dp))
@@ -121,6 +148,69 @@ fun AboutScreen() {
 }
 
 // ── Reusable composables ───────────────────────────────────────────────
+
+@Composable
+private fun UpdateCheckResult(
+    updateState: com.campusauth.update.UpdateUiState,
+    onOpenDownload: (String) -> Unit,
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        when {
+            updateState.checking -> Text(
+                text = "正在检查更新…",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            updateState.updateInfo != null -> {
+                val info = updateState.updateInfo!!
+                Text(
+                    text = "发现新版本 ${info.tag}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium,
+                )
+                if (info.notes.isNotBlank()) {
+                    Text(
+                        text = info.notes,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 2.dp),
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                TextButton(onClick = { onOpenDownload(info.releaseUrl) }) {
+                    Text("前往下载")
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                    )
+                }
+            }
+            updateState.errorMessage != null -> Text(
+                text = updateState.errorMessage!!,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+            )
+            updateState.upToDate -> Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "已是最新版本",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
 
 @Composable
 private fun InfoSection(title: String, content: @Composable ColumnScope.() -> Unit) {

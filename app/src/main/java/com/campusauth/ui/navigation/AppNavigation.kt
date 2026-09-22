@@ -21,6 +21,7 @@ import com.campusauth.ui.screen.AboutScreen
 import com.campusauth.ui.screen.LogsScreen
 import com.campusauth.ui.screen.SettingsScreen
 import com.campusauth.ui.screen.StatusScreen
+import com.campusauth.update.UpdateChecker
 import com.campusauth.ui.screen.WizardScreen
 
 enum class Screen(val route: String, val label: String, val icon: ImageVector) {
@@ -47,6 +48,7 @@ private val tabPopExitTransition: ExitTransition =
 fun AppNavigation(needsWizard: Boolean) {
     val navController = rememberNavController()
     var showWizard by remember { mutableStateOf(needsWizard) }
+    val updateState by UpdateChecker.state.collectAsState()
 
     // Full-screen wizard overlay with fade transition
     AnimatedVisibility(
@@ -68,7 +70,15 @@ fun AppNavigation(needsWizard: Boolean) {
             NavigationBar {
                 Screen.entries.forEach { screen ->
                     NavigationBarItem(
-                        icon = { Icon(screen.icon, contentDescription = screen.label) },
+                        icon = {
+                            if (screen == Screen.About && updateState.showIndicator) {
+                                BadgedBox(badge = { Badge() }) {
+                                    Icon(screen.icon, contentDescription = screen.label)
+                                }
+                            } else {
+                                Icon(screen.icon, contentDescription = screen.label)
+                            }
+                        },
                         label = { Text(screen.label) },
                         selected = currentRoute == screen.route,
                         onClick = {

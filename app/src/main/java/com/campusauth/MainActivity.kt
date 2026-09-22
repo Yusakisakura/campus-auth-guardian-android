@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import com.campusauth.ffi.GuardianBridge
+import com.campusauth.update.UpdateChecker
 import com.campusauth.ui.navigation.AppNavigation
 import com.campusauth.ui.theme.CampusAuthTheme
 
@@ -34,6 +35,9 @@ class MainActivity : ComponentActivity() {
 
         // Initialize Rust guardian core
         GuardianBridge.initialize(applicationContext)
+
+        // Silent update check (honors settings switch + interval)
+        UpdateChecker.autoCheck(applicationContext)
 
         // Request notification permission (Android 13+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
